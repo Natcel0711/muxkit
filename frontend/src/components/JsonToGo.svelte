@@ -9,7 +9,7 @@ function GetJson(data){
         error = undefined
         return undefined
     }
-    let result = jsonToGo(data)
+    let result = jsonToGo(data, "<structname>")
     if(result.error){
         error = result.error
         return undefined
