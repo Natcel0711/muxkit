@@ -10,7 +10,6 @@ function GetJson(data){
         return undefined
     }
     let result = jsonToGo(data)
-    console.log("Result:",result.go,"Error:", result.error)
     if(result.error){
         error = result.error
         return undefined
