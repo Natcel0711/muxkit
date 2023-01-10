@@ -54,34 +54,6 @@ func fooHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"alive": true}`))
 }
 
-// func test() {
-// 	 psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-// 	/ db, err := gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
-// 	 if err != nil {
-// 	 	panic("failed to connect to database")
-// 	 }
-// 	crea tabla con esas propiedades
-// 	db.AutoMigrate(&Product{})
-// 	db.Raw("INSERT INTO Users(id, name) VALUES (4, 'CockAndBalls');")
-// 	 db.Raw("SELECT * FROM Users WHERE id = 4").Scan(&user)
-
-// 	 fmt.Println("User found:", user)
-// 	Inserta
-// 	 users := Users{Id: 7, Name: "Bicho colao"}
-// 	 res := db.Create(&users)
-// 	 fmt.Println(users.Id, res.Error, res.RowsAffected)
-// 	Busca
-// 	 var user = Users{Id: 2}
-// 	 db.First(&user)
-// 	 fmt.Println(user)
-// 	Update
-// 	 user.Name = "Paola Acevedo Munoz"
-// 	 db.Save(&user)
-// 	Delete
-// 	 userToDelete := Users{Id: 7}
-// 	 db.Delete(&Users{}, userToDelete.Id)
-// }
-
 func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	if r.Method == http.MethodOptions {
