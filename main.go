@@ -49,7 +49,7 @@ func AllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("postgres", psqlconn)
 	CheckError(err)
 	defer db.Close()
-	rows, err := db.Query(`SELECT * FROM public.employee`)
+	rows, err := db.Query(`SELECT * FROM public.Users`)
 	CheckError(err)
 	defer rows.Close()
 	var emps Employees
