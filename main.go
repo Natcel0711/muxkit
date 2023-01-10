@@ -38,6 +38,8 @@ func main() {
 	r.HandleFunc("/users", AllUsersHandler).Methods(http.MethodGet)
 	r.HandleFunc("/users/{id}", GetUserHandler).Methods(http.MethodGet)
 	r.HandleFunc("/users", InsertUserHandler).Methods(http.MethodPost)
+	r.HandleFunc("/users/{id}", DeleteUserHandler).Methods(http.MethodDelete)
+	r.HandleFunc("/users", UpdateUserHandler).Methods(http.MethodPut)
 	r.Use(mux.CORSMethodMiddleware(r))
 
 	http.ListenAndServe(":8080", r)
@@ -125,6 +127,24 @@ func InsertUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(res.RowsAffected, usuario.Id)
 }
+func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
+	var usuario Users
+	var userFound Users
+	err := json.NewDecoder(r.Body).Decode(&usuario)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	db, err := gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
+	if err != nil {
+		panic("Something happened while accessing database")
+	}
+	db.First(&userFound, usuario.Id)
+	userFound.Name = usuario.Name
+	db.Save(&userFound)
+	w.Write([]byte(fmt.Sprintf("{\"Success\":true, \"Message\": \"User updated %d\"}", userFound.Id)))
+}
 
 func AllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -154,7 +174,35 @@ func AllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	CheckError(err)
 	w.Write([]byte(jsonStr))
 }
-
+func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if r.Method == http.MethodOptions {
+		return
+	}
+	idReq := mux.Vars(r)["id"]
+	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	db, err := gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
+	if err != nil {
+		panic("Something happened while accessing database")
+	}
+	//Convert to int
+	id, err := strconv.Atoi(idReq)
+	if err != nil {
+		panic("Failed to convert ID to integer")
+	}
+	user := Users{Id: id}
+	result := db.Find(&user)
+	fmt.Println(result.Error, result.RowsAffected)
+	if result.Error != nil {
+		panic("Failed to look for user")
+	}
+	if result.RowsAffected == 0 {
+		w.Write([]byte(fmt.Sprintf("{\"Success\":false, \"Message\": \"No user with id of %d\"}", id)))
+		return
+	}
+	//db.Delete(&user)
+	w.Write([]byte(fmt.Sprintf("{\"Success\":true, \"Message\": \"Deleted user with id of %d\"}", id)))
+}
 func CheckError(err error) {
 	if err != nil {
 		panic(err)
