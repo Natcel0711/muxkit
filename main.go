@@ -37,6 +37,7 @@ func main() {
 	r.HandleFunc("/foo", fooHandler).Methods(http.MethodGet, http.MethodPut, http.MethodPatch, http.MethodOptions)
 	r.HandleFunc("/users", AllUsersHandler).Methods(http.MethodGet)
 	r.HandleFunc("/users/{id}", GetUserHandler).Methods(http.MethodGet)
+	r.HandleFunc("/users", InsertUserHandler).Methods(http.MethodPost)
 	r.Use(mux.CORSMethodMiddleware(r))
 
 	http.ListenAndServe(":8080", r)
@@ -105,6 +106,24 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		panic("Error while converting to Json")
 	}
 	w.Write([]byte(jsonStr))
+}
+func InsertUserHandler(w http.ResponseWriter, r *http.Request) {
+	var usuario Users
+	err := json.NewDecoder(r.Body).Decode(&usuario)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	db, err := gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
+	if err != nil {
+		panic("Something happened while accessing database")
+	}
+	res := db.Create(&usuario)
+	if res.Error != nil {
+		panic("Error while creating user")
+	}
+	fmt.Println(res.RowsAffected, usuario.Id)
 }
 
 func AllUsersHandler(w http.ResponseWriter, r *http.Request) {
