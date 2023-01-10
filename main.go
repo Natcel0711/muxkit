@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -12,6 +13,7 @@ import (
 )
 
 func main() {
+	fmt.Println("Listening on localhost:8080")
 	err := godotenv.Load()
 	if err != nil {
 		panic("Failed to load env")
@@ -26,5 +28,4 @@ func main() {
 	r.Use(mux.CORSMethodMiddleware(r))
 
 	http.ListenAndServe(":8080", r)
-
 }
