@@ -8,10 +8,14 @@ import (
 
 	dbendpoints "goginkit/apiendpoints"
 
-	_ "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		panic("Failed to load env")
+	}
 	r := mux.NewRouter()
 	// IMPORTANT: you must specify an OPTIONS method matcher for the middleware to set CORS headers
 	r.HandleFunc("/users", dbendpoints.AllUsersHandler).Methods(http.MethodGet)
@@ -22,4 +26,5 @@ func main() {
 	r.Use(mux.CORSMethodMiddleware(r))
 
 	http.ListenAndServe(":8080", r)
+
 }

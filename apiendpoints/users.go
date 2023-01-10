@@ -19,7 +19,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	idReq := mux.Vars(r)["id"]
-	psqlconn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", os.Getenv("host"), os.Getenv("host"), os.Getenv("host"), os.Getenv("host"), os.Getenv("host"))
+	psqlconn := os.Getenv("credentials")
 	db, err := gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
 	if err != nil {
 		panic("Something happened while accessing database")
@@ -47,7 +47,7 @@ func InsertUserHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	psqlconn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", os.Getenv("host"), os.Getenv("host"), os.Getenv("host"), os.Getenv("host"), os.Getenv("host"))
+	psqlconn := os.Getenv("credentials")
 	db, err := gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
 	if err != nil {
 		panic("Something happened while accessing database")
@@ -66,7 +66,7 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	psqlconn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", os.Getenv("host"), os.Getenv("host"), os.Getenv("host"), os.Getenv("host"), os.Getenv("host"))
+	psqlconn := os.Getenv("credentials")
 	db, err := gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
 	if err != nil {
 		panic("Something happened while accessing database")
@@ -82,7 +82,7 @@ func AllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		return
 	}
-	psqlconn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", os.Getenv("host"), os.Getenv("host"), os.Getenv("host"), os.Getenv("host"), os.Getenv("host"))
+	psqlconn := os.Getenv("credentials")
 	db, err := sql.Open("postgres", psqlconn)
 	CheckError(err)
 	defer db.Close()
@@ -111,7 +111,7 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	idReq := mux.Vars(r)["id"]
-	psqlconn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", os.Getenv("host"), os.Getenv("host"), os.Getenv("host"), os.Getenv("host"), os.Getenv("host"))
+	psqlconn := os.Getenv("credentials")
 	db, err := gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
 	if err != nil {
 		panic("Something happened while accessing database")
