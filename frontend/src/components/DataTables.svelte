@@ -9,7 +9,6 @@
 
 <TabGroup selected={storeTab}>
 	<Tab value="Users">Users</Tab>
-	<Tab value="Products">Products</Tab>
 </TabGroup>
 
 {#if $storeTab === 'Users'}<UsersTable users={data.users}/>{/if}

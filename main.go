@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 
-	dbendpoints "goginkit/apiendpoints"
+	dbendpoints "goginkit/handlers"
 
 	"github.com/joho/godotenv"
 )
