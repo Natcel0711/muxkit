@@ -8,25 +8,15 @@ import (
 
 	dbendpoints "goginkit/apiendpoints"
 
-	"gorm.io/gorm"
+	"github.com/joho/godotenv"
 )
-
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "Tripleh1"
-	dbname   = "postgres"
-)
-
-type Product struct {
-	gorm.Model
-	Code  string
-	Price uint
-}
 
 func main() {
 	r := mux.NewRouter()
+	err := godotenv.Load()
+	if err != nil {
+		panic("Error loading env")
+	}
 	// IMPORTANT: you must specify an OPTIONS method matcher for the middleware to set CORS headers
 	r.HandleFunc("/users", dbendpoints.AllUsersHandler).Methods(http.MethodGet)
 	r.HandleFunc("/users/{id}", dbendpoints.GetUserHandler).Methods(http.MethodGet)
