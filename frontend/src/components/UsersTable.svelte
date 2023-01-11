@@ -36,7 +36,7 @@ function triggerCustomModal(): void {
 		// NOTE: title, body, response, etc are supported!
 		component: modalComponent,
 		// Pass abitrary data to the component
-		meta: { foo: 'bar', fizz: 'buzz', onSubmit: (data)=>{console.log(data)}, name: user.name, id:user.id }
+		meta: { foo: 'bar', fizz: 'buzz', onSubmit: (data)=>{tableSimple.body[data.id - 1][1] = data.name}, name: user.name, id:user.id }
 	};
 	modalStore.trigger(d);
 }

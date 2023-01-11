@@ -6,6 +6,9 @@ export async function load() {
 		credentials: 'same-origin'
 	});
 	let data = await response.json();
+  data.EmployeeList.sort(function(a, b) { 
+    return a.id - b.id  ||  a.name.localeCompare(b.name);
+  });
 	return {
 		users: data.EmployeeList
 	};
