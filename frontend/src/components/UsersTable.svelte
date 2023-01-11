@@ -5,11 +5,11 @@
     export let users
     const tableSimple: TableSource = {
         // A list of heading labels.
-        head: ['ID', 'Name'],
+        head: ['ID', 'Name', 'Email', 'Password', 'Created At', 'Updated At'],
         // The data visibly shown in your table body UI.
-        body: tableMapperValues(users.users, ['id', 'name']),
+        body: tableMapperValues(users.users, ['id', 'name', 'email', 'password', 'createdat', 'updatedat']),
         // Optional: The data returned when interactive is enabled and a row is clicked.
-        meta: tableMapperValues(users.users, ['id', 'name']),
+        meta: tableMapperValues(users.users, ['id', 'name', 'email', 'password', 'createdat', 'updatedat']),
         // Optional: A list of footer labels.
         //foot: ['Total', '', '<code>31.7747</code>']
     };
@@ -21,9 +21,11 @@ const mySelectionHandler = (e) => {
 }
 const user = {
     id:0,
-    name:""
+    name:"",
+    email:"",
+    password:""
 }
-
+console.log(users.users)
 
 function UpdateToast(): void {
 	const t: ToastSettings = {

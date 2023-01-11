@@ -1,12 +1,12 @@
 package dbendpoints
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 	"gorm.io/driver/postgres"
@@ -81,6 +81,9 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	db.First(&userFound, usuario.Id)
 	userFound.Name = usuario.Name
+	userFound.Email = usuario.Email
+	userFound.Password = usuario.Password
+	userFound.UpdatedAt = time.Now()
 	db.Save(&userFound)
 	w.Write([]byte(fmt.Sprintf("{\"Success\":true, \"Message\": \"User updated %d\"}", userFound.Id)))
 }
@@ -91,36 +94,22 @@ func AllUsersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	psqlconn := os.Getenv("credentials")
-	db, err := sql.Open("postgres", psqlconn)
+	db, err := gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
 	if err != nil {
 		w.Write([]byte("Error connecting to DB"))
 		return
 	}
-	defer db.Close()
-	rows, err := db.Query(`SELECT * FROM public.Users`)
-	if err != nil {
-		w.Write([]byte("Error querying table"))
+	db.AutoMigrate(&Users{})
+	allUsers := []Users{}
+	result := db.Find(&allUsers)
+	if result.Error != nil {
+		w.Write([]byte("Error getting users"))
 		return
 	}
-	defer rows.Close()
-	var emps Employees
-	for rows.Next() {
-		var id int
-		var name string
-		err = rows.Scan(&id, &name)
-		if err != nil {
-			w.Write([]byte("Error scanning user"))
-			return
-		}
-		emp := Employee{
-			Id:   id,
-			Name: name,
-		}
-		emps.AddEmployee(emp)
-	}
-	jsonStr, err := json.Marshal(emps)
+	jsonStr, err := json.Marshal(allUsers)
 	if err != nil {
-		w.Write([]byte("Error parsing to json"))
+		w.Write([]byte("Error while converting to Json"))
+		return
 	}
 	w.Write([]byte(jsonStr))
 }
@@ -167,8 +156,13 @@ type Employee struct {
 	Name string `json:"name"`
 }
 type Users struct {
-	Id   int    `json:"id" sql:"AUTO_INCREMENT" gorm:"primary_key"`
-	Name string `json:"name"`
+	Id        int            `json:"id" sql:"AUTO_INCREMENT" gorm:"primary_key"`
+	Name      string         `json:"name"`
+	Email     string         `json:"email"`
+	Password  string         `json:"password"`
+	CreatedAt time.Time      `json:"createdat"`
+	UpdatedAt time.Time      `json:"updatedat"`
+	DeletedAt gorm.DeletedAt `json:"deletedat"`
 }
 type Employees struct {
 	EmployeeList []Employee `json:"EmployeeList"`

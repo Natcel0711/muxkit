@@ -6,11 +6,12 @@ export async function load() {
 		credentials: 'same-origin'
 	});
 	let data = await response.json();
-	data.EmployeeList.sort(function (a, b) {
+	console.log("Usuarios:",data)
+	data.sort(function (a, b) {
 		return a.id - b.id || a.name.localeCompare(b.name);
 	});
 	return {
-		users: data.EmployeeList
+		users: data
 	};
 }
 
@@ -52,7 +53,12 @@ export const actions = {
 		//build user obj
 		const user: User = {
 			Id: Number(data.get('id')),
-			Name: data.get('name')
+			Name: data.get('name'),
+			Password: data.get('password'),
+			Email: data.get('email'),
+			CreatedAt: data.get('CreatedAt'),
+			UpdatedAt: data.get('UpdatedAt'),
+			DeletedAt: data.get('DeletedAt'),
 		};
 
 		if (user.Id) actions.Update(user);
