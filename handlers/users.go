@@ -44,25 +44,26 @@ func InsertUserHandler(w http.ResponseWriter, r *http.Request) {
 	var usuario Users
 	err := json.NewDecoder(r.Body).Decode(&usuario)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		w.Write([]byte("Error decoding user"))
 		return
 	}
 	psqlconn := os.Getenv("credentials")
 	db, err := gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
 	if err != nil {
-		panic("Something happened while accessing database")
+		w.Write([]byte("Error connecting to DB"))
+		return
 	}
 	res := db.Create(&usuario)
 	if res.Error != nil {
-		panic("Error while creating user")
+		w.Write([]byte("Error creating user"))
+		return
 	}
-	fmt.Println(res.RowsAffected, usuario.Id)
+	w.Write([]byte(fmt.Sprintf("{\"Success\":true, \"Message\": \"User %s Added\"}", usuario.Name)))
 }
 func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	var usuario Users
 	var userFound Users
-	fmt.Println(r)
 	err := json.NewDecoder(r.Body).Decode(&usuario)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -71,7 +72,8 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	psqlconn := os.Getenv("credentials")
 	db, err := gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
 	if err != nil {
-		panic("Something happened while accessing database")
+		w.Write([]byte("Error connecting to DB"))
+		return
 	}
 	db.First(&userFound, usuario.Id)
 	userFound.Name = usuario.Name
@@ -86,17 +88,23 @@ func AllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	psqlconn := os.Getenv("credentials")
 	db, err := sql.Open("postgres", psqlconn)
-	CheckError(err)
+	if err != nil {
+		w.Write([]byte("Error connecting to DB"))
+	}
 	defer db.Close()
 	rows, err := db.Query(`SELECT * FROM public.Users`)
-	CheckError(err)
+	if err != nil {
+		w.Write([]byte("Error querying table"))
+	}
 	defer rows.Close()
 	var emps Employees
 	for rows.Next() {
 		var id int
 		var name string
 		err = rows.Scan(&id, &name)
-		CheckError(err)
+		if err != nil {
+			w.Write([]byte("Error scanning user"))
+		}
 		emp := Employee{
 			Id:   id,
 			Name: name,
@@ -104,7 +112,9 @@ func AllUsersHandler(w http.ResponseWriter, r *http.Request) {
 		emps.AddEmployee(emp)
 	}
 	jsonStr, err := json.Marshal(emps)
-	CheckError(err)
+	if err != nil {
+		w.Write([]byte("Error parsing to json"))
+	}
 	w.Write([]byte(jsonStr))
 }
 func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -136,11 +146,7 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	//db.Delete(&user)
 	w.Write([]byte(fmt.Sprintf("{\"Success\":true, \"Message\": \"Deleted user with id of %d\"}", id)))
 }
-func CheckError(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
+
 func (emps *Employees) AddEmployee(employee Employee) []Employee {
 	emps.EmployeeList = append(emps.EmployeeList, employee)
 	return emps.EmployeeList
@@ -151,7 +157,7 @@ type Employee struct {
 	Name string `json:"name"`
 }
 type Users struct {
-	Id   int    `json:"id"`
+	Id   int    `json:"id" sql:"AUTO_INCREMENT" gorm:"primary_key"`
 	Name string `json:"name"`
 }
 type Employees struct {
