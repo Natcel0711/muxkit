@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+
 	// Props
 	/** Exposes parent props to this component. */
 	export let parent: any;
@@ -25,10 +27,11 @@
 <div class="modal-example-form {cBase}">
 	<!-- Enable for debugging: -->
 	<!-- <pre>{JSON.stringify(formData, null, 2)}</pre> -->
-	<form class="modal-form {cForm}" id="myForm" action="?/Update" method="POST">
+    <h3>Update User</h3>
+	<form class="modal-form {cForm}" id="myForm" action="?/Update" use:enhance method="POST">
 		<label>
 			<span>Name</span>
-			<input type="text" name="name" class="pl-2" bind:value={formData.name} placeholder="Enter name..." />
+			<input type="text" name="name" class="pl-2 w-2/4" bind:value={formData.name} placeholder="Enter name..." />
 		</label>
         <input type="text" name="id" hidden bind:value={formData.id}/>
 	</form>
