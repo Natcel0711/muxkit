@@ -22,21 +22,25 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	psqlconn := os.Getenv("credentials")
 	db, err := gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
 	if err != nil {
-		panic("Something happened while accessing database")
+		w.Write([]byte("Something happened while accessing database"))
+		return
 	}
 	//Convert to int
 	id, err := strconv.Atoi(idReq)
 	if err != nil {
-		panic("Failed to convert ID to integer")
+		w.Write([]byte("Failed to convert ID to integer"))
+		return
 	}
 	user := Users{Id: id}
 	result := db.Find(&user)
 	if result.Error != nil {
-		panic("Failed to look for user")
+		w.Write([]byte("Failed to look for user"))
+		return
 	}
 	jsonStr, err := json.Marshal(user)
 	if err != nil {
-		panic("Error while converting to Json")
+		w.Write([]byte("Error while converting to Json"))
+		return
 	}
 	w.Write([]byte(jsonStr))
 }
@@ -90,11 +94,13 @@ func AllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("postgres", psqlconn)
 	if err != nil {
 		w.Write([]byte("Error connecting to DB"))
+		return
 	}
 	defer db.Close()
 	rows, err := db.Query(`SELECT * FROM public.Users`)
 	if err != nil {
 		w.Write([]byte("Error querying table"))
+		return
 	}
 	defer rows.Close()
 	var emps Employees
@@ -104,6 +110,7 @@ func AllUsersHandler(w http.ResponseWriter, r *http.Request) {
 		err = rows.Scan(&id, &name)
 		if err != nil {
 			w.Write([]byte("Error scanning user"))
+			return
 		}
 		emp := Employee{
 			Id:   id,
@@ -126,18 +133,21 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	psqlconn := os.Getenv("credentials")
 	db, err := gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
 	if err != nil {
-		panic("Something happened while accessing database")
+		w.Write([]byte("Something happened while accessing database"))
+		return
 	}
 	//Convert to int
 	id, err := strconv.Atoi(idReq)
 	if err != nil {
-		panic("Failed to convert ID to integer")
+		w.Write([]byte("Failed to convert ID to integer"))
+		return
 	}
 	user := Users{Id: id}
 	result := db.Find(&user)
 	fmt.Println(result.Error, result.RowsAffected)
 	if result.Error != nil {
-		panic("Failed to look for user")
+		w.Write([]byte("Failed to look for user"))
+		return
 	}
 	if result.RowsAffected == 0 {
 		w.Write([]byte(fmt.Sprintf("{\"Success\":false, \"Message\": \"No user with id of %d\"}", id)))
