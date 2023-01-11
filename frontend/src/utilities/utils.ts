@@ -428,18 +428,3 @@ if (typeof module != 'undefined') {
 		module.exports = jsonToGo;
 	}
 }
-
-
-
-export const UpdateUser = async (user) => {
-	const response = await fetch("http://localhost:8080/users", {
-		method: "PUT",
-		mode:'cors',
-		headers:{
-			'Content-Type':'application/json'
-		},
-		body:JSON.stringify(user)
-	})
-	const data = await response.json()
-	console.log(data)
-};

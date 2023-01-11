@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Modal, Table, tableMapperValues, modalStore } from '@skeletonlabs/skeleton';
-    import type { TableSource, ModalSettings, ModalComponent } from '@skeletonlabs/skeleton';
+    import { Modal, Table, tableMapperValues, modalStore, Toast, toastStore } from '@skeletonlabs/skeleton';
+    import type { TableSource, ModalSettings, ModalComponent, ToastSettings } from '@skeletonlabs/skeleton';
     import ModalUSer from '../components/ModalUSer.svelte';
     export let users
     const tableSimple: TableSource = {
@@ -22,6 +22,22 @@ const user = {
     id:0,
     name:""
 }
+
+
+function triggerToast(): void {
+	const t: ToastSettings = {
+		message: '✅ User updated.',
+		// Optional: Presets for primary | secondary | tertiary | warning
+		preset: 'primary',
+		// Optional: The auto-hide settings
+		autohide: true,
+		timeout: 5000,
+		// Optional: Adds a custom action button
+	};
+	toastStore.trigger(t);
+}
+			
+
 function triggerCustomModal(): void {
 	const modalComponent: ModalComponent = {
 		// Pass a reference to your custom component
@@ -36,12 +52,21 @@ function triggerCustomModal(): void {
 		// NOTE: title, body, response, etc are supported!
 		component: modalComponent,
 		// Pass abitrary data to the component
-		meta: { foo: 'bar', fizz: 'buzz', onSubmit: (data)=>{tableSimple.body[data.id - 1][1] = data.name}, name: user.name, id:user.id }
+		meta: { foo: 'bar', fizz: 'buzz', 
+            onSubmit: (data)=>{
+                tableSimple.body[data.id - 1][1] = data.name
+                triggerToast()
+            }, 
+        name: user.name, id:user.id 
+        }
 	};
 	modalStore.trigger(d);
 }
+			
 </script>
 
 <Table source={tableSimple} interactive={true} on:selected={mySelectionHandler} />
 
 <Modal />
+
+<Toast />
