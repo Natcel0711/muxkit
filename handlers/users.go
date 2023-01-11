@@ -59,8 +59,10 @@ func InsertUserHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(res.RowsAffected, usuario.Id)
 }
 func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	var usuario Users
 	var userFound Users
+	fmt.Println(r)
 	err := json.NewDecoder(r.Body).Decode(&usuario)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

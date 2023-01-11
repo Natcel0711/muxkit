@@ -10,6 +10,7 @@ import (
 	dbendpoints "goginkit/handlers"
 
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -18,6 +19,9 @@ func main() {
 	if err != nil {
 		panic("Failed to load env")
 	}
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"}, // All origins
+	})
 	r := mux.NewRouter()
 	// IMPORTANT: you must specify an OPTIONS method matcher for the middleware to set CORS headers
 	r.HandleFunc("/users", dbendpoints.AllUsersHandler).Methods(http.MethodGet)
@@ -27,5 +31,5 @@ func main() {
 	r.HandleFunc("/users", dbendpoints.UpdateUserHandler).Methods(http.MethodPut)
 	r.Use(mux.CORSMethodMiddleware(r))
 
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":8080", c.Handler(r))
 }

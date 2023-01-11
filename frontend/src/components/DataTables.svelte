@@ -4,7 +4,6 @@
     const storeTab: Writable<string> = writable('Users');
         import { writable, type Writable } from 'svelte/store';
 	import UsersTable from './UsersTable.svelte';
-    console.log("Desde datatables:", data)
 </script>
 
 <TabGroup selected={storeTab}>

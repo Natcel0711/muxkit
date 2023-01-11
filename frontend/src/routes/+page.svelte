@@ -5,7 +5,6 @@
 	import { writable, type Writable } from 'svelte/store';
 	import DataTables from "../components/DataTables.svelte";
     const storeTab: Writable<string> = writable('a');
-    console.log("Del server:", data)
 </script>
 
 
