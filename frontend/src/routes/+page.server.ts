@@ -6,23 +6,17 @@ export async function load() {
 		credentials: 'same-origin'
 	});
 	let data = await response.json();
-  data.EmployeeList.sort(function(a, b) { 
-    return a.id - b.id  ||  a.name.localeCompare(b.name);
-  });
+	data.EmployeeList.sort(function (a, b) {
+		return a.id - b.id || a.name.localeCompare(b.name);
+	});
 	return {
 		users: data.EmployeeList
 	};
 }
 
 export const actions = {
-	Update: async ({ request }) => {
-		//get form data
-		const data = await request.formData();
+	Update: async (user) => {
 		//build user obj
-		const user: User = {
-			Id: Number(data.get('id')),
-			Name: data.get('name')
-		};
 		//http request to update
 		const response = await fetch('http://localhost:8080/users', {
 			method: 'PUT',
@@ -33,5 +27,39 @@ export const actions = {
 			body: JSON.stringify(user)
 		});
 		const res = await response.json();
+	},
+	Insert: async (user) => {
+		//build user obj
+		try {
+			console.log("Inserting user:",user, "\n JSON:", JSON.stringify(user))
+			//http request to insert
+			const response = await fetch('http://localhost:8080/users', {
+				method: 'POST',
+				mode: 'cors',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(user)
+			});
+			const res = await response.json();
+			console.log(res);
+		} catch (error) {
+			console.log(error);
+		}
+	},
+	InsertOrUpdate: async ({ request }) => {
+		const data = await request.formData();
+		//build user obj
+		const user: User = {
+			Id: Number(data.get('id')),
+			Name: data.get('name')
+		};
+
+		if (user.Id) actions.Update(user);
+		else if (!user.Id) actions.Insert(user);
+
+		return {
+			Added: user
+		}
 	}
 };

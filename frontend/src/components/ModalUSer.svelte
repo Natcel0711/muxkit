@@ -27,8 +27,8 @@
 <div class="modal-example-form {cBase}">
 	<!-- Enable for debugging: -->
 	<!-- <pre>{JSON.stringify(formData, null, 2)}</pre> -->
-    <h3>Update User</h3>
-	<form class="modal-form {cForm}" id="myForm" action="?/Update" use:enhance method="POST">
+    <h3>{!formData.id? 'Insert':'Update'} User</h3>
+	<form class="modal-form {cForm}" id="myForm" action="?/InsertOrUpdate" use:enhance method="POST">
 		<label>
 			<span>Name</span>
 			<input type="text" name="name" class="pl-2 w-2/4" bind:value={formData.name} placeholder="Enter name..." />

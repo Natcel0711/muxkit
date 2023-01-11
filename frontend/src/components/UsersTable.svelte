@@ -1,21 +1,22 @@
 <script lang="ts">
     import { Modal, Table, tableMapperValues, modalStore, Toast, toastStore } from '@skeletonlabs/skeleton';
     import type { TableSource, ModalSettings, ModalComponent, ToastSettings } from '@skeletonlabs/skeleton';
-    import ModalUSer from '../components/ModalUSer.svelte';
+    import ModalUSer from './ModalUser.svelte';
     export let users
     const tableSimple: TableSource = {
         // A list of heading labels.
         head: ['ID', 'Name'],
         // The data visibly shown in your table body UI.
-        body: tableMapperValues(users, ['id', 'name']),
+        body: tableMapperValues(users.users, ['id', 'name']),
         // Optional: The data returned when interactive is enabled and a row is clicked.
-        meta: tableMapperValues(users, ['id', 'name']),
+        meta: tableMapperValues(users.users, ['id', 'name']),
         // Optional: A list of footer labels.
         //foot: ['Total', '', '<code>31.7747</code>']
     };
 const mySelectionHandler = (e) => {
     user.id = e.detail[0]
     user.name = e.detail[1]
+    console.log(user)
     triggerCustomModal()
 }
 const user = {
@@ -24,9 +25,21 @@ const user = {
 }
 
 
-function triggerToast(): void {
+function UpdateToast(): void {
 	const t: ToastSettings = {
 		message: '✅ User updated.',
+		// Optional: Presets for primary | secondary | tertiary | warning
+		preset: 'primary',
+		// Optional: The auto-hide settings
+		autohide: true,
+		timeout: 5000,
+		// Optional: Adds a custom action button
+	};
+	toastStore.trigger(t);
+}
+function InsertToast(user): void {
+	const t: ToastSettings = {
+		message: `✅ ${user} Added.`,
 		// Optional: Presets for primary | secondary | tertiary | warning
 		preset: 'primary',
 		// Optional: The auto-hide settings
@@ -54,8 +67,12 @@ function triggerCustomModal(): void {
 		// Pass abitrary data to the component
 		meta: { foo: 'bar', fizz: 'buzz', 
             onSubmit: (data)=>{
-                tableSimple.body[data.id - 1][1] = data.name
-                triggerToast()
+                if(data.id){
+                    tableSimple.body[data.id - 1][1] = data.name
+                    UpdateToast()
+                }else{
+                    InsertToast(data.name)
+                }
             }, 
         name: user.name, id:user.id 
         }
@@ -64,7 +81,7 @@ function triggerCustomModal(): void {
 }
 			
 </script>
-
+<button class="btn btn-ringed-primary btn-base ring-2 ring-surface-500 ring-inset m-2" on:click={mySelectionHandler}><strong>ADD</strong>➕</button>
 <Table source={tableSimple} interactive={true} on:selected={mySelectionHandler} />
 
 <Modal />

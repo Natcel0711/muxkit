@@ -10,4 +10,4 @@
 	<Tab value="Users">Users</Tab>
 </TabGroup>
 
-{#if $storeTab === 'Users'}<UsersTable users={data.users}/>{/if}
+{#if $storeTab === 'Users'}<UsersTable users={data}/>{/if}
