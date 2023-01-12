@@ -9,7 +9,6 @@ export function jsonToGo(json, typename, flatten = true, example = false, allOmi
 	let accumulator = '';
 	let innerTabs = 0;
 	let parent = '';
-	console.log('yellow');
 	try {
 		data = JSON.parse(json.replace(/(:\s*\[?\s*-?\d*)\.0/g, '$1.1')); // hack that forces floats to stay as floats
 		scope = data;

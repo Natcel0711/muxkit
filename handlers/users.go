@@ -62,7 +62,7 @@ func InsertUserHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Error creating user"))
 		return
 	}
-	w.Write([]byte(fmt.Sprintf("{\"Success\":true, \"Message\": \"User %s Added\"}", usuario.Name)))
+	w.Write([]byte(fmt.Sprintf("{\"Success\":true, \"NewID\":%d, \"Message\": \"User %s Added\"}", usuario.Id, usuario.Name)))
 }
 func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")

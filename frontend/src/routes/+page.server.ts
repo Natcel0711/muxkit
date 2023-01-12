@@ -6,7 +6,6 @@ export async function load() {
 		credentials: 'same-origin'
 	});
 	let data = await response.json();
-	console.log("Usuarios:",data)
 	data.sort(function (a, b) {
 		return a.id - b.id || a.name.localeCompare(b.name);
 	});
@@ -32,7 +31,6 @@ export const actions = {
 	Insert: async (user) => {
 		//build user obj
 		try {
-			console.log("Inserting user:",user, "\n JSON:", JSON.stringify(user))
 			//http request to insert
 			const response = await fetch('http://localhost:8080/users', {
 				method: 'POST',
@@ -42,8 +40,8 @@ export const actions = {
 				},
 				body: JSON.stringify(user)
 			});
+			console.log("Before")
 			const res = await response.json();
-			console.log(res);
 		} catch (error) {
 			console.log(error);
 		}
@@ -63,9 +61,5 @@ export const actions = {
 
 		if (user.Id) actions.Update(user);
 		else if (!user.Id) actions.Insert(user);
-
-		return {
-			Added: user
-		}
 	}
 };
