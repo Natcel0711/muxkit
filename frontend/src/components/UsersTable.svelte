@@ -16,7 +16,8 @@
 const mySelectionHandler = (e) => {
     user.id = e.detail[0]
     user.name = e.detail[1]
-    console.log(user)
+	user.email = e.detail[2]
+	user.password = e.detail[3]
     triggerCustomModal()
 }
 const user = {
@@ -25,7 +26,6 @@ const user = {
     email:"",
     password:""
 }
-console.log(users.users)
 
 function UpdateToast(): void {
 	const t: ToastSettings = {
@@ -70,13 +70,26 @@ function triggerCustomModal(): void {
 		meta: { foo: 'bar', fizz: 'buzz', 
             onSubmit: (data)=>{
                 if(data.id){
-                    tableSimple.body[data.id - 1][1] = data.name
+                    tableSimple.body[data.id - 2][1] = data.name
+					tableSimple.body[data.id - 2][2] = data.email
+					tableSimple.body[data.id - 2][3] = data.password
                     UpdateToast()
                 }else{
+					// const newUser = [0, data.name, data.email, data.password, Date.now(), Date.now()]
+					// tableSimple.body.push(newUser)
+					// tableSimple.meta?.push(newUser)
+					// users.users.push({
+					// 	id:0,
+					// 	name:data.name,
+					// 	email:data.email,
+					// 	password:data.password,
+					// 	createdat:Date.now(),
+					// 	updatedat:Date.now()
+					// })
                     InsertToast(data.name)
                 }
             }, 
-        name: user.name, id:user.id 
+        name: user.name, id:user.id, email:user.email, password: user.password 
         }
 	};
 	modalStore.trigger(d);
